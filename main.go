@@ -15,7 +15,7 @@ func main() {
 	done := make(chan bool)
 
 	go listenForMessages(done)
-	sendMessages(done)
+	go sendMessages(done)
 
 	<-done
 	<-done
