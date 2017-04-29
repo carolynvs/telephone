@@ -8,9 +8,8 @@ import (
 )
 
 func sendMessage(msg string, destination string) {
-	if destination == "" {
+	if destination == "" || msg == "" {
 		// Nothing to do
-		// I am the final gopher in the telephone chain
 		return
 	}
 
