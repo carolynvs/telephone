@@ -25,8 +25,8 @@ If every gopher faithfully repeats the message, then the game isn't terribly fun
 # Run the Game
 
 ```
-go get -u github.com/ladygogo/telphone
-cd $GOPATH/github.com/ladygogo/telphone
+go get -u github.com/ladygogo/telephone
+cd $GOPATH/github.com/ladygogo/telephone
 go build
 # open a terminal and run the following
 ./telephone
