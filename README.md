@@ -31,6 +31,6 @@ go build
 # open a terminal and run the following
 ./telephone
 # open another terminal in the same directory and run the following
-./telephone -me="localhost:8082" -friend="gopher1:localhost:8081" -name="gopher2"
+./telephone -me="localhost:8082" -friend="gopher1:localhost:8081" -msg="Hello gopher friend!" -name="gopher2"
 # you can change the message with -msg="💩"
 ```
