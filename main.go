@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"flag"
+	"fmt"
 	"log"
 	"net"
+	"os"
 	"strings"
 
 	"github.com/ladygogo/telephone/gophers"
@@ -32,10 +35,18 @@ func main() {
 	}
 
 	if initialMessage != "" {
-		// I am the first gopher, start the telephone chain, and then quit
+		// I am the first gopher, start the telephone chain
 		gopher.SendMessage(initialMessage)
+
+		for {
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("Enter message to send: ")
+			msg, _ := reader.ReadString('\n')
+			msg = strings.TrimSpace(msg)
+			gopher.SendMessage(msg)
+		}
 	} else {
-		// Wait until we receive a message, and then quit
+		// Wait until we receive a message
 		messageReceived := make(chan bool)
 		go listenForMessages(messageReceived)
 		<-messageReceived
@@ -61,7 +72,7 @@ func listenForMessages(messageReceived chan bool) {
 			continue
 		}
 		gopher.HandleMessage(conn)
-		messageReceived <- true
-		close(messageReceived)
+		//messageReceived <- true
+		//close(messageReceived)
 	}
 }
