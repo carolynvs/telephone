@@ -1,30 +1,34 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 	"io/ioutil"
 	"log"
 	"net"
+
+	"github.com/ladygogo/telephone/gophers"
 )
 
-const port int = 8081
-
-var addr string = fmt.Sprintf("localhost:%d", port)
+var gopher gophers.DefaultGopher
 
 func main() {
+	flag.StringVar(&gophers.ListenerAddress, "me", "localhost:8081", "My listener address, defaults to localhost:8081")
+	flag.StringVar(&gophers.FriendAddress, "friend", "localhost:8082", "My friend's address, defaults to localhost:8082")
+	flag.StringVar(&gophers.Message, "msg", "Hello there, my friend!", "Initial message to send")
+	flag.Parse()
+
 	done := make(chan bool)
 
 	go listenForMessages(done)
-	go sendMessages(done)
-
+	go gopher.SendMessages(gophers.Message, done)
 	<-done
 	<-done
 }
 
 func listenForMessages(done chan bool) {
 	// Start listening for messages
-	log.Printf("Listening on %s\n", addr)
-	listen, err := net.Listen("tcp4", addr)
+	log.Printf("Listening on %s\n", gophers.ListenerAddress)
+	listen, err := net.Listen("tcp4", gophers.ListenerAddress)
 	if err != nil {
 		log.Fatalf("Unable to listen for incoming message: %v", err)
 	}
@@ -56,25 +60,6 @@ func readMessage(conn net.Conn, done chan bool) {
 
 	// Print the message
 	log.Printf("\n\n\t%s\n\n", msg)
-	done <- true
-}
 
-func sendMessages(done chan bool) {
-	// Connect to the listener
-	conn, err := net.Dial("tcp", addr)
-	if err != nil {
-		log.Fatalf("Unable to connect to the listener: %v", err)
-	}
-	defer conn.Close()
-
-	// Make a message and convert it to bytes
-	msg := "Hello World!\r\n\r\n"
-	msgb := []byte(msg)
-
-	log.Printf("Sending message: %s", msg)
-	_, err = conn.Write(msgb)
-	if err != nil {
-		log.Fatalf("Unable to send the message: %v", err)
-	}
-	done <- true
+	gopher.SendMessages(msg, done)
 }

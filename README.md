@@ -28,5 +28,9 @@ If every gopher faithfully repeats the message, then the game isn't terribly fun
 go get -u github.com/ladygogo/telphone
 cd $GOPATH/github.com/ladygogo/telphone
 go build
+# open a terminal and run the following
 ./telephone
+# open another terminal in the same directory and run the following
+./telephone -me="localhost:8082" -friend="localhost:8081"
+# you can change the message with -msg="💩"
 ```
