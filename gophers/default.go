@@ -6,14 +6,19 @@ import (
 	"time"
 )
 
-type DefaultGopher struct{}
+type DefaultGopher struct {
+	Name          string
+	FriendName    string
+	FriendAddress string
+}
 
-func (g DefaultGopher) SendMessages(msg string, done chan bool) {
+func (g DefaultGopher) Send(msg string) {
 	// Connect to a friend
-	conn, err := net.Dial("tcp", FriendAddress)
+	conn, err := net.Dial("tcp", g.FriendAddress)
 	if err != nil {
+		log.Println("My friend isn't ready yet to receive my message. Waiting...")
 		time.Sleep(5 * time.Second)
-		g.SendMessages(msg, done)
+		g.Send(msg)
 		return
 	}
 	defer conn.Close()
@@ -26,5 +31,16 @@ func (g DefaultGopher) SendMessages(msg string, done chan bool) {
 	if err != nil {
 		log.Fatalf("Unable to send the message: %v", err)
 	}
-	done <- true
+}
+
+func (g DefaultGopher) HandleMessage(conn net.Conn) {
+	msg := readMessageString(conn)
+
+	if g.FriendAddress != "" {
+		// I am not the last gopher in the chain
+		// So keep passing the message along
+		g.Send(msg)
+	} else {
+		log.Println("Game over! ☎️")
+	}
 }

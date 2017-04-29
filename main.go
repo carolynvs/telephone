@@ -2,30 +2,44 @@ package main
 
 import (
 	"flag"
-	"io/ioutil"
 	"log"
 	"net"
+	"strings"
 
 	"github.com/ladygogo/telephone/gophers"
 )
 
 var gopher gophers.DefaultGopher
 
+var friend string
+var initialMessage string
+
 func main() {
 	flag.StringVar(&gophers.ListenerAddress, "me", "localhost:8081", "My listener address, defaults to localhost:8081")
-	flag.StringVar(&gophers.FriendAddress, "friend", "localhost:8082", "My friend's address, defaults to localhost:8082")
-	flag.StringVar(&gophers.Message, "msg", "Hello there, my friend!", "Initial message to send")
+	flag.StringVar(&friend, "friend", "gopher2:localhost:8082", "My friend's name:address:port")
+	flag.StringVar(&initialMessage, "msg", "Hello my good friend!", "Initial message to send")
+	flag.StringVar(&gopher.Name, "name", "gopher1", "Your gopher's name")
+
 	flag.Parse()
 
-	done := make(chan bool)
+	friendArgs := strings.SplitN(friend, ":", 2)
+	gopher.FriendName = friendArgs[0]
+	gopher.FriendAddress = friendArgs[1]
+	log.Printf("Hi my name is %s, and I am playing telephone with my friend %s", gopher.Name, gopher.FriendName)
 
-	go listenForMessages(done)
-	go gopher.SendMessages(gophers.Message, done)
-	<-done
-	<-done
+	messageReceived := make(chan bool)
+	go listenForMessages(messageReceived)
+
+	// The gopher with the lower name starts the game
+	if gopher.Name < gopher.FriendName {
+		go gopher.Send(initialMessage)
+	}
+
+	// Wait until we receive a message, then quit
+	<-messageReceived
 }
 
-func listenForMessages(done chan bool) {
+func listenForMessages(messageReceived chan bool) {
 	// Start listening for messages
 	log.Printf("Listening on %s\n", gophers.ListenerAddress)
 	listen, err := net.Listen("tcp4", gophers.ListenerAddress)
@@ -41,25 +55,7 @@ func listenForMessages(done chan bool) {
 			log.Fatalln(err)
 			continue
 		}
-		go readMessage(conn, done)
+		gopher.HandleMessage(conn)
+		messageReceived <- true
 	}
-}
-
-func readMessage(conn net.Conn, done chan bool) {
-	defer conn.Close()
-
-	// Read all of the message bytes
-	log.Println("Reading incoming message...")
-	msgb, err := ioutil.ReadAll(conn)
-	if err != nil {
-		log.Fatalf("Unable to read incoming message: %v", err)
-	}
-
-	// Assume the message is a string
-	msg := string(msgb)
-
-	// Print the message
-	log.Printf("\n\n\t%s\n\n", msg)
-
-	gopher.SendMessages(msg, done)
 }
