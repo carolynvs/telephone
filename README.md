@@ -29,8 +29,7 @@ go get -u github.com/ladygogo/telephone
 cd $GOPATH/github.com/ladygogo/telephone
 go build
 # open a terminal and run the following
-./telephone
+./telephone -name gopher1
 # open another terminal in the same directory and run the following
-./telephone -me="localhost:8082" -friend="gopher1:localhost:8081" -msg="Hello gopher friend!" -name="gopher2"
-# you can change the message with -msg="💩"
+./telephone -name gopher2
 ```

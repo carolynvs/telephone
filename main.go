@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net"
 	"os"
 
 	"github.com/pkg/errors"
@@ -19,28 +18,25 @@ func main() {
 		Gopher          string
 		MessagesAddress string
 	}
-	flag.StringVar(&opts.MessagesAddress, "me", "localhost:8081", "My listener address, defaults to localhost:8081")
 	flag.StringVar(&opts.Gopher, "gopher", "", "The type of gopher to use")
-	flag.StringVar(&opts.Name, "name", "gopher1", "Your gopher's name")
+	flag.StringVar(&opts.Name, "name", "", "Your gopher's name")
 	flag.Parse()
-
-	// TODO: pick a random unused port
-	addr, err := net.ResolveTCPAddr("tcp", opts.MessagesAddress)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// Pick a gopher to play with defaulting to a boring gopher who gets the job done
 	var gopher Gopher
 	switch opts.Gopher {
 	default:
-		gopher = DefaultGopher{name: opts.Name}
+		gopher = DefaultGopher{}
 	}
 
-	phone := newTelephone(gopher, addr)
+	phone := NewTelephone(gopher, opts.Name)
 	phone.Start()
 
-	fmt.Println("### Type a message to send at any time, and press ENTER to send ###")
+	fmt.Println()
+	fmt.Println("#############################################################")
+	fmt.Println("     Type a message at any time, and press ENTER to send     ")
+	fmt.Println("#############################################################")
+	fmt.Println()
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		value, err := reader.ReadString('\n')

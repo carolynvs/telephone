@@ -1,16 +1,7 @@
 package main
 
-type DefaultGopher struct {
-	name string
-}
+type DefaultGopher struct{}
 
-func (g DefaultGopher) Name() string {
-	return g.name
-}
-
-func (g DefaultGopher) HandleMessage(msg Message) {
-	msg.From = g.name
-
-	// Pass along the message to the next gopher
-	msg.Send()
+func (g DefaultGopher) TransformMessage(msg Message) string {
+	return msg.Body
 }
