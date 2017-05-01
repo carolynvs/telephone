@@ -1,12 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"log"
 	"net"
 	"os"
 	"strings"
 	"time"
 )
+
+const registrationAddress string = "224.0.0.1:9000"
+const resultsAddress string = "224.0.0.1:9001"
 
 // Telephone is the game event loop. It listens for incoming messages and has your gopher reply back.
 type Telephone struct {
@@ -40,6 +44,7 @@ func (t *Telephone) Start() {
 	go t.listenForFriends()
 	go t.register()
 	go t.listenForMessages(listener)
+	go t.listenForResults()
 }
 
 // Send a message to your gopher friends
@@ -116,19 +121,59 @@ func (t *Telephone) listenForMessages(listener net.Listener) {
 		}
 
 		msg, err := readMessage(conn)
+		conn.Close()
 		if err != nil {
 			log.Printf("Unable to read incoming message: %+v", err)
 			continue
 		}
 
-		log.Printf("Received:%s", msg)
+		log.Printf("\nReceived:%s\n", msg)
 		go t.handleMessage(msg)
 	}
 }
 
 func (t *Telephone) handleMessage(msg Message) {
 	result := t.gopher.TransformMessage(msg)
-	msg.Forward(result)
+
+	if len(msg.CC) != 0 {
+		msg.Forward(result)
+	} else {
+		msg.Broadcast()
+	}
+
+}
+
+func (t *Telephone) listenForResults() {
+	addr, err := net.ResolveUDPAddr("udp", resultsAddress)
+	if err != nil {
+		log.Fatalf("%+v", errors.Wrapf(err, "Unable to resolve upd %s", resultsAddress))
+	}
+
+	// Start listening for final message broadcasts from friends
+	log.Printf("Listening for results on udp %s\n", addr)
+	listen, err := net.ListenMulticastUDP("udp", nil, addr)
+	if err != nil {
+		log.Fatalf("Unable to listen for registration broadcasts: %v", err)
+	}
+	defer listen.Close()
+
+	// Handle incoming result announcements
+	for {
+		buf := make([]byte, 1024)
+		n, _, err := listen.ReadFromUDP(buf)
+		if err != nil {
+			log.Fatalln(err)
+			continue
+		}
+
+		msg, err := readMessage(bytes.NewReader(buf[:n]))
+		if err != nil {
+			log.Printf("%+v", err)
+			continue
+		}
+
+		log.Printf("\nFinal Message:%s\n", msg.Body)
+	}
 }
 
 func (t *Telephone) listenForFriends() {

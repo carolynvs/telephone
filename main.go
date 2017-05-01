@@ -10,8 +10,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-const registrationAddress string = "224.0.0.1:9000"
-
 func main() {
 	var opts struct {
 		Name            string
