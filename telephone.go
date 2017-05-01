@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"time"
 )
 
 // Telephone is the game event loop. It listens for incoming messages and has your gopher reply back.
@@ -81,7 +82,7 @@ func (t *Telephone) listenForFriends() {
 	}
 	defer listen.Close()
 
-	// Handle incoming messages
+	// Handle incoming friend registrations
 	for {
 		buf := make([]byte, 1024)
 		n, _, err := listen.ReadFromUDP(buf)
@@ -99,7 +100,10 @@ func (t *Telephone) listenForFriends() {
 			// ignore myself
 			continue
 		}
-		log.Printf("\nI found my friend %s at %s\n", friend.Name, friend.Address)
+		_, exists := t.friends[friend.Name]
+		if !exists {
+			log.Printf("\nI found a new friend %s at %s\n", friend.Name, friend.Address)
+		}
 		t.friends[friend.Name] = *friend
 	}
 }
@@ -116,8 +120,13 @@ func (t *Telephone) register() {
 	defer conn.Close()
 
 	self := fmt.Sprintf("%s:%s", t.gopher.Name(), t.address)
-	_, err = conn.Write([]byte(self))
-	if err != nil {
-		log.Fatalf("Unable to register: %v", err)
+
+	// Broadcast that where I can be reached at regular intervals
+	for {
+		_, err = conn.Write([]byte(self))
+		if err != nil {
+			log.Fatalf("Unable to register: %v", err)
+		}
+		time.Sleep(time.Second)
 	}
 }
