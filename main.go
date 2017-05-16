@@ -24,6 +24,8 @@ func main() {
 	// Pick a gopher to play with, defaulting to a boring gopher who gets the job done
 	var gopher Gopher
 	switch opts.Gopher {
+	case "emoji":
+		gopher = gophers.EmojiGopher{}
 	default:
 		gopher = gophers.DefaultGopher{}
 	}
