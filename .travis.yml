@@ -1,0 +1,21 @@
+---
+language: go
+matrix:
+  include:
+    - os: linux
+      go: 1.7.x
+    - os: linux
+      go: 1.8.x
+    - os: linux
+      go: tip
+    - os: osx
+      go: 1.8.x
+
+go_import_path: github.com/ladygogo/telephone
+
+sudo: false # Build in a container
+
+notifications:
+  email: false
+
+install: echo "Skipping default Travis install step"

@@ -2,6 +2,8 @@
 
 This is the classic game of Telephone, played out by helpful gophers.
 
+![Travis Build Status](https://travis-ci.org/ladygogo/telephone.svg?branch=master)
+
 ## Rules
 * All gophers get in a line, sorted by their name.
 * The first gopher thinks up a really special message and tells it to the next gopher.
