@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/ladygogo/telephone/gophers"
 	"github.com/pkg/errors"
 )
 
@@ -20,11 +21,11 @@ func main() {
 	flag.StringVar(&opts.Name, "name", "", "Your gopher's name")
 	flag.Parse()
 
-	// Pick a gopher to play with defaulting to a boring gopher who gets the job done
+	// Pick a gopher to play with, defaulting to a boring gopher who gets the job done
 	var gopher Gopher
 	switch opts.Gopher {
 	default:
-		gopher = DefaultGopher{}
+		gopher = gophers.DefaultGopher{}
 	}
 
 	phone := NewTelephone(gopher, opts.Name)

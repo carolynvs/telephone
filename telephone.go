@@ -135,7 +135,7 @@ func (t *Telephone) listenForMessages(listener net.Listener) {
 }
 
 func (t *Telephone) handleMessage(msg Message) {
-	result := t.gopher.TransformMessage(msg)
+	result := t.gopher.TransformMessage(msg.Body)
 
 	if len(msg.CC) != 0 {
 		msg.Forward(result)
