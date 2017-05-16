@@ -61,7 +61,7 @@ func (msg *Message) Broadcast() {
 	log.Printf("Connecting to my friends on %s\n", addr)
 	conn, err := net.DialUDP("udp", nil, addr)
 	if err != nil {
-		log.Fatalf("Unable to connect to results port: %v", err)
+		log.Fatalf("%+v", errors.Wrap(err, "Unable to connect to results port"))
 	}
 
 	// Broadcast the results of a telephone chain
@@ -84,7 +84,7 @@ func (msg *Message) transmit(conn net.Conn) {
 	log.Printf("Sending message:\n%s\n", msg)
 	_, err = conn.Write(msgb)
 	if err != nil {
-		log.Fatalf("Unable to send the message: %v", err)
+		log.Fatalf("%+v", errors.Wrap(err, "Unable to send the message"))
 	}
 }
 

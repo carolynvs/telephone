@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 const registrationAddress string = "224.0.0.1:9000"
@@ -98,7 +100,7 @@ func (t *Telephone) listenOnFreePort() net.Listener {
 	// Start listening on a free/open port
 	listener, err := net.ListenTCP("tcp", freePortRequest)
 	if err != nil {
-		log.Fatalf("Unable to listen for incoming message: %v", err)
+		log.Fatalf("%+v", errors.Wrap(err, "Unable to listen for incoming message"))
 	}
 
 	// Remember which port was assigned
@@ -116,7 +118,7 @@ func (t *Telephone) listenForMessages(listener net.Listener) {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			log.Fatalln(err)
+			log.Printf("%+v", errors.Wrap(err, "Warning: Unable to listen for messages. Retrying..."))
 			continue
 		}
 
@@ -153,7 +155,7 @@ func (t *Telephone) listenForResults() {
 	log.Printf("Listening for results on udp %s\n", addr)
 	listen, err := net.ListenMulticastUDP("udp", nil, addr)
 	if err != nil {
-		log.Fatalf("Unable to listen for registration broadcasts: %v", err)
+		log.Fatalf("%+v", errors.Wrap(err, "Unable to listen for registration broadcasts"))
 	}
 	defer listen.Close()
 
@@ -162,7 +164,7 @@ func (t *Telephone) listenForResults() {
 		buf := make([]byte, 1024)
 		n, _, err := listen.ReadFromUDP(buf)
 		if err != nil {
-			log.Fatalln(err)
+			log.Printf("%+v", errors.Wrap(err, "Warning: Unable to listen for results. Retrying..."))
 			continue
 		}
 
@@ -183,7 +185,7 @@ func (t *Telephone) listenForFriends() {
 	log.Printf("Listening for friends on udp %s\n", registrationAddress)
 	listen, err := net.ListenMulticastUDP("udp", nil, addr)
 	if err != nil {
-		log.Fatalf("Unable to listen for registration broadcasts: %v", err)
+		log.Fatalf("%+v", errors.Wrap(err, "Unable to listen for registration broadcasts"))
 	}
 	defer listen.Close()
 
@@ -192,7 +194,7 @@ func (t *Telephone) listenForFriends() {
 		buf := make([]byte, 1024)
 		n, _, err := listen.ReadFromUDP(buf)
 		if err != nil {
-			log.Fatalln(err)
+			log.Printf("%+v", errors.Wrap(err, "Warning: Unable to listen for friends. Retrying..."))
 			continue
 		}
 		f := string(buf[:n])
@@ -221,7 +223,7 @@ func (t *Telephone) register() {
 	log.Printf("Registering my gopher on %s\n", registrationAddress)
 	conn, err := net.DialUDP("udp", nil, addr)
 	if err != nil {
-		log.Fatalf("Unable to connect to registration port: %v", err)
+		log.Fatalf("%+v", errors.Wrap(err, "Unable to connect to registration port"))
 	}
 	defer conn.Close()
 
@@ -229,7 +231,7 @@ func (t *Telephone) register() {
 	for {
 		_, err = conn.Write([]byte(t.me.String()))
 		if err != nil {
-			log.Fatalf("Unable to register: %v", err)
+			log.Printf("%+v", errors.Wrap(err, "Warning: Unable to register with my friends. Retrying..."))
 		}
 		time.Sleep(time.Second)
 	}

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+
+	"github.com/pkg/errors"
 )
 
 type Friend struct {
@@ -15,12 +17,12 @@ func ParseFriend(msg string) (*Friend, error) {
 	r := regexp.MustCompile(`(.+)\((.+:\d+)\)`)
 	matches := r.FindStringSubmatch(msg)
 	if len(matches) != 3 {
-		log.Fatalf("Invalid friend message '%s'", msg)
+		log.Fatalf("%+v", errors.Errorf("Invalid friend message '%s'", msg))
 	}
 
 	number, err := ParsePhoneNumber(matches[2])
 	if err != nil {
-		log.Fatalf("Invalid friend phone number '%s': %v", matches[2], err)
+		log.Fatalf("%+v", errors.Wrapf(err, "Invalid friend phone number '%s'", matches[2]))
 	}
 
 	f := &Friend{
