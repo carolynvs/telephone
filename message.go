@@ -13,7 +13,7 @@ import (
 
 type Message struct {
 	Id   string   `json:"id"`
-	To   Friend   `json:"to"`
+	To   *Friend  `json:"to"`
 	From Friend   `json:"from"`
 	CC   []Friend `json:"cc"`
 	Body string   `json:"body"`
@@ -88,21 +88,19 @@ func (msg *Message) transmit(conn net.Conn) {
 	}
 }
 
-func (msg *Message) Forward(body string) {
-	if len(msg.CC) == 0 {
-		// Nothing to do
-		return
-	}
-
-	reply := Message{
+func (msg *Message) CreateReply(body string) *Message {
+	reply := &Message{
 		Id:   msg.Id,
-		From: msg.To,
-		To:   msg.CC[0],
-		CC:   msg.CC[1:len(msg.CC)],
+		From: *msg.To,
 		Body: body,
 	}
 
-	reply.Send()
+	if len(msg.CC) > 0 {
+		reply.To = &msg.CC[0]
+		reply.CC = msg.CC[1:len(msg.CC)]
+	}
+
+	return reply
 }
 
 func readMessage(reader io.Reader) (Message, error) {

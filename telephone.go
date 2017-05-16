@@ -69,8 +69,8 @@ func (t *Telephone) Send(value string) {
 		Body: value,
 	}
 	for _, friend := range t.friends {
-		if msg.To.Name == "" {
-			msg.To = friend
+		if msg.To == nil {
+			msg.To = &friend
 		} else {
 			msg.CC = append(msg.CC, friend)
 		}
@@ -144,12 +144,12 @@ func (t *Telephone) listenForMessages(listener net.Listener) {
 func (t *Telephone) handleMessage(msg Message) {
 	result := t.gopher.TransformMessage(msg.Body)
 
-	if len(msg.CC) != 0 {
-		msg.Forward(result)
-	} else {
-		msg.Broadcast()
+	reply := msg.CreateReply(result)
+	if reply.To != nil {
+		reply.Send()
+	} else { // We are the last in the chain, broadcast the results of the round to everyone
+		reply.Broadcast()
 	}
-
 }
 
 func (t *Telephone) listenForResults() {
@@ -181,7 +181,7 @@ func (t *Telephone) listenForResults() {
 			continue
 		}
 
-		log.Printf("\nFinal Message:%s\n", msg.Body)
+		log.Printf("Final Message:\n\n\t%s\n\n", msg.Body)
 	}
 }
 
