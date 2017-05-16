@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"fmt"
+
 	"github.com/pkg/errors"
 )
 
@@ -39,7 +41,12 @@ func NewTelephone(gopher Gopher, name string) *Telephone {
 
 // Start listening for messages from your gopher friends
 func (t *Telephone) Start() {
-	log.Printf("Hi, my name is %s. Let's play telephone!\n\n", t.me.Name)
+	// Determine the type of gopher we are working with
+	gopherType := fmt.Sprintf("%T", t.gopher)
+	parts := strings.Split(gopherType, ".")
+	gopherType = parts[len(parts)-1]
+
+	log.Printf("Hi my name is %s and I'm a %s. Let's play telephone!\n\n", t.me.Name, gopherType)
 
 	listener := t.listenOnFreePort()
 
