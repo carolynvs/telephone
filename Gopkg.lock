@@ -1,0 +1,7 @@
+memo = "a5785f91e34c6888b78d77a1937bcd00ba051ca6e3927b0b9a119bcbf5a1a325"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "ff09b135c25aae272398c51a07235b90a75aa4f0"
