@@ -26,12 +26,16 @@ If every gopher faithfully repeats the message, then the game isn't terribly fun
 
 ✅ You can find solutions for the gophers in the [solutions branch](https://github.com/ladygogo/telephone/tree/solutions/gophers).
 
-# Run the Game
+# Get the Game
 
 ```
 go get -u github.com/ladygogo/telephone
 cd $GOPATH/github.com/ladygogo/telephone
 go build
+```
+
+# Play Telephone
+```
 # open a terminal and run the following
 ./telephone -name gopher1
 # open another terminal in the same directory and run the following
@@ -42,3 +46,16 @@ Once the game is running, you can type messages into the console and it should
 be repeated to the other connected game instances.
 
 To stop the game, press `CTRL + C`.
+
+Once you have implemented a gopher, you can reload the game as that gopher with `-gopher` flag
+
+```
+./telephone -name geekygirl5 -gopher emoji
+```
+
+The pre-defined gophers types are:
+
+    * `emoji`
+    * `norris`
+    * `csi`
+    * `data`
