@@ -26,6 +26,8 @@ func main() {
 	switch opts.Gopher {
 	case "emoji":
 		gopher = gophers.EmojiGopher{}
+	case "norris":
+		gopher = gophers.NewChuckNorrisGopher()
 	default:
 		gopher = gophers.DefaultGopher{}
 	}
