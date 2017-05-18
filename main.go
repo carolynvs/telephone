@@ -28,6 +28,8 @@ func main() {
 		gopher = gophers.EmojiGopher{}
 	case "norris":
 		gopher = gophers.NewChuckNorrisGopher()
+	case "csi":
+		gopher = gophers.CSIGopher{}
 	default:
 		gopher = gophers.DefaultGopher{}
 	}
