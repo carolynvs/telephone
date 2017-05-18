@@ -1,5 +1,13 @@
 package gophers
 
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+
+	"github.com/pkg/errors"
+)
+
 // ChuckNorrisGopher replies with Chuck Norris quotes instead of relaying the original message.
 type ChuckNorrisGopher struct {
 	endpoint string
@@ -11,13 +19,25 @@ func NewChuckNorrisGopher() ChuckNorrisGopher {
 	}
 }
 
+type quoteResult struct {
+	Value quoteWrapper `json:"value"`
+}
+type quoteWrapper struct {
+	Joke string `json:"joke"`
+}
+
 func (g ChuckNorrisGopher) TransformMessage(msg string) string {
-	// TODO: Lookup quotes from an HTTP API and return them
-	// Feel free to use a different quote API if Chuck isn't to your liking
+	resp, err := http.Get(g.endpoint)
+	if err != nil {
+		log.Printf("%+v", errors.Wrapf(err, "Unable to retrieve a quote from %s", g.endpoint))
+		return "Chuck Norris failed!"
+	}
 
-	// Helpful links:
-	// * https://golang.org/pkg/net/http/#example_Get
-	// * https://golang.org/pkg/encoding/json/#example_Decoder_Decode_stream
-
-	return "Chuck Norris quotes are great!"
+	result := quoteResult{}
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
+		log.Printf("%+v", errors.Wrapf(err, "Unable to unmarshal a quote from %s", g.endpoint))
+		return "Chuck Norris failed!"
+	}
+	return result.Value.Joke
 }
