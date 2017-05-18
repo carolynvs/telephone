@@ -2,7 +2,7 @@
 
 This is the classic game of Telephone, played out by helpful gophers.
 
-![Travis Build Status](https://travis-ci.org/ladygogo/telephone.svg?branch=master)
+[![Travis Build Status](https://travis-ci.org/ladygogo/telephone.svg?branch=master)](https://travis-ci.org/ladygogo/telephone)
 
 ## Rules
 * All gophers get in a line, sorted by their name.
