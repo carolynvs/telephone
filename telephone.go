@@ -2,13 +2,12 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"net"
 	"os"
 	"strings"
 	"time"
-
-	"fmt"
 
 	"github.com/pkg/errors"
 )
