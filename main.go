@@ -30,6 +30,8 @@ func main() {
 		gopher = gophers.NewChuckNorrisGopher()
 	case "csi":
 		gopher = gophers.CSIGopher{}
+	case "data":
+		gopher = gophers.DataScienceGopher{}
 	default:
 		gopher = gophers.DefaultGopher{}
 	}
