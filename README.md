@@ -24,6 +24,8 @@ If every gopher faithfully repeats the message, then the game isn't terribly fun
 [sqlite]: https://github.com/mattn/go-sqlite3
 [aciitext]: http://artii.herokuapp.com/make?text=gophers
 
+✅ You can find solutions for the gophers in the [solutions branch](https://github.com/ladygogo/telephone/tree/solutions/gophers).
+
 # Run the Game
 
 ```
