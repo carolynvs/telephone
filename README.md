@@ -59,3 +59,17 @@ The pre-defined gophers types are:
     * `norris`
     * `csi`
     * `data`
+
+# Run Tests
+
+Some of the gophers come with tests which verify your implementation.
+
+**Run a single test**
+```
+go test -v -run TestEmoji ./gophers
+```
+
+**Run all tests**
+```
+go test -v ./gophers
+```
