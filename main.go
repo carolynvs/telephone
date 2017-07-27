@@ -32,6 +32,8 @@ func main() {
 		gopher = gophers.CSIGopher{}
 	case "data":
 		gopher = gophers.DataScienceGopher{}
+        case "yoda":
+                gopher = gophers.NewYodaGopher()
 	default:
 		gopher = gophers.DefaultGopher{}
 	}
